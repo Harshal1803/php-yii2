@@ -1,0 +1,41 @@
+- name: Setup Yii2 App Environment
+  hosts: web
+  become: yes
+
+  tasks:
+    - name: Install dependencies
+      apt:
+        name:
+          - docker.io
+          - docker-compose
+          - git
+          - nginx
+          - php
+        state: present
+        update_cache: yes
+
+    - name: Enable and start Docker
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+    - name: Initialize Docker Swarm
+      shell: docker swarm init || true
+
+    - name: Copy NGINX config
+      copy:
+        src: nginx.conf
+        dest: /etc/nginx/sites-available/yii2
+        mode: '0644'
+
+    - name: Enable NGINX config
+      file:
+        src: /etc/nginx/sites-available/yii2
+        dest: /etc/nginx/sites-enabled/yii2
+        state: link
+
+    - name: Restart NGINX
+      service:
+        name: nginx
+        state: restarted
