@@ -1,0 +1,9 @@
+.git
+vendor
+runtime
+web/assets
+tests
+*.md
+*.gitignore
+Dockerfile
+docker-compose.yml
